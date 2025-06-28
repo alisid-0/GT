@@ -26,6 +26,7 @@ public class PlayerInputManager : MonoBehaviour
     [Header("PLAYER ACTION INPUT")]
     [SerializeField] bool dodgeInput = false;
     [SerializeField] bool sprintInput = false;
+    [SerializeField] bool jumpInput = false;
 
     private void Awake()
     {
@@ -71,6 +72,7 @@ public class PlayerInputManager : MonoBehaviour
             playerControls.PlayerCamera.Movement.performed += i => cameraInput = i.ReadValue<Vector2>();
             playerControls.PlayerCamera.Mouse.performed += i => cameraInput = i.ReadValue<Vector2>();
             playerControls.PlayerActions.Dodge.performed += instance => dodgeInput = true;
+            playerControls.PlayerActions.Jump.performed += instance => jumpInput = true;
 
             // HOLDING INPUT SETS BOOL TO TRUE
             playerControls.PlayerActions.Sprint.performed += instance => sprintInput = true;
@@ -111,7 +113,8 @@ public class PlayerInputManager : MonoBehaviour
         HandleCameraMovementInput();
         HandlePlayerMovementInput();
         HandleDodgeInput();
-        HandleSprinting();
+        HandleSprintInput();
+        HandleJumpInput();
     }
 
     // MOVEMENT
@@ -164,7 +167,7 @@ public class PlayerInputManager : MonoBehaviour
         }
     }
 
-    private void HandleSprinting()
+    private void HandleSprintInput()
     {
         if (sprintInput)
         {
@@ -173,6 +176,20 @@ public class PlayerInputManager : MonoBehaviour
         else
         {
             player.playerNetworkManager.isSprinting.Value = false;
+        }
+    }
+
+    private void HandleJumpInput()
+    {
+        if (jumpInput)
+        {
+            jumpInput = false;
+
+            // IF WE HAVE A UI WINDOW OPEN SIMPLY RETURN WITHOUT DOING ANYTHING
+
+            // ATTEMPT TO PERFORM JUMP
+
+            player.playerLocomotionManager.AttemptToPerformJump();
         }
     }
 }

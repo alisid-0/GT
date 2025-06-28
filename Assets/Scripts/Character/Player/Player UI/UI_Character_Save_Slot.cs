@@ -1,9 +1,10 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
 public class UI_Character_Save_Slot : MonoBehaviour
 {
-
     SaveFileDataWriter saveFileWriter;
 
     [Header("Game Slot")]
@@ -11,7 +12,7 @@ public class UI_Character_Save_Slot : MonoBehaviour
 
     [Header("Character Info")]
     public TextMeshProUGUI characterName;
-    public TextMeshProUGUI timePlayed;
+    public TextMeshProUGUI timedPlayed;
 
     private void OnEnable()
     {
@@ -23,138 +24,166 @@ public class UI_Character_Save_Slot : MonoBehaviour
         saveFileWriter = new SaveFileDataWriter();
         saveFileWriter.saveDataDirectoryPath = Application.persistentDataPath;
 
-        // SAVE SLOTS
+        //  SAVE SLOT 01
         if (characterSlot == CharacterSlot.CharacterSlot_01)
         {
             saveFileWriter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
 
+            //  IF THE FILE EXISTS, GET INFORMATION FROM IT
             if (saveFileWriter.CheckToSeeIfFileExists())
             {
-                characterName.text = WorldSaveGameManager.instance.characterSlot01.chartacterName;
+                characterName.text = WorldSaveGameManager.instance.characterSlot01.characterName;
             }
+            //  IF IT DOES NOT, DISABLE THIS GAMEOBJECT
             else
             {
                 gameObject.SetActive(false);
             }
         }
+        //  SAVE SLOT 02
         else if (characterSlot == CharacterSlot.CharacterSlot_02)
         {
             saveFileWriter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
 
+            //  IF THE FILE EXISTS, GET INFORMATION FROM IT
             if (saveFileWriter.CheckToSeeIfFileExists())
             {
-                characterName.text = WorldSaveGameManager.instance.characterSlot02.chartacterName;
+                characterName.text = WorldSaveGameManager.instance.characterSlot02.characterName;
             }
+            //  IF IT DOES NOT, DISABLE THIS GAMEOBJECT
             else
             {
                 gameObject.SetActive(false);
             }
         }
+        //  SAVE SLOT 03
         else if (characterSlot == CharacterSlot.CharacterSlot_03)
         {
             saveFileWriter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
 
+            //  IF THE FILE EXISTS, GET INFORMATION FROM IT
             if (saveFileWriter.CheckToSeeIfFileExists())
             {
-                characterName.text = WorldSaveGameManager.instance.characterSlot03.chartacterName;
+                characterName.text = WorldSaveGameManager.instance.characterSlot03.characterName;
             }
+            //  IF IT DOES NOT, DISABLE THIS GAMEOBJECT
             else
             {
                 gameObject.SetActive(false);
             }
         }
+        //  SAVE SLOT 04
         else if (characterSlot == CharacterSlot.CharacterSlot_04)
         {
             saveFileWriter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
 
+            //  IF THE FILE EXISTS, GET INFORMATION FROM IT
             if (saveFileWriter.CheckToSeeIfFileExists())
             {
-                characterName.text = WorldSaveGameManager.instance.characterSlot04.chartacterName;
+                characterName.text = WorldSaveGameManager.instance.characterSlot04.characterName;
             }
+            //  IF IT DOES NOT, DISABLE THIS GAMEOBJECT
             else
             {
                 gameObject.SetActive(false);
             }
         }
+        //  SAVE SLOT 05
         else if (characterSlot == CharacterSlot.CharacterSlot_05)
         {
             saveFileWriter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
 
+            //  IF THE FILE EXISTS, GET INFORMATION FROM IT
             if (saveFileWriter.CheckToSeeIfFileExists())
             {
-                characterName.text = WorldSaveGameManager.instance.characterSlot05.chartacterName;
+                characterName.text = WorldSaveGameManager.instance.characterSlot05.characterName;
             }
+            //  IF IT DOES NOT, DISABLE THIS GAMEOBJECT
             else
             {
                 gameObject.SetActive(false);
             }
         }
+        //  SAVE SLOT 06
         else if (characterSlot == CharacterSlot.CharacterSlot_06)
         {
             saveFileWriter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
 
+            //  IF THE FILE EXISTS, GET INFORMATION FROM IT
             if (saveFileWriter.CheckToSeeIfFileExists())
             {
-                characterName.text = WorldSaveGameManager.instance.characterSlot06.chartacterName;
+                characterName.text = WorldSaveGameManager.instance.characterSlot06.characterName;
             }
+            //  IF IT DOES NOT, DISABLE THIS GAMEOBJECT
             else
             {
                 gameObject.SetActive(false);
             }
         }
+        //  SAVE SLOT 07
         else if (characterSlot == CharacterSlot.CharacterSlot_07)
         {
             saveFileWriter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
 
+            //  IF THE FILE EXISTS, GET INFORMATION FROM IT
             if (saveFileWriter.CheckToSeeIfFileExists())
             {
-                characterName.text = WorldSaveGameManager.instance.characterSlot07.chartacterName;
+                characterName.text = WorldSaveGameManager.instance.characterSlot07.characterName;
             }
+            //  IF IT DOES NOT, DISABLE THIS GAMEOBJECT
             else
             {
                 gameObject.SetActive(false);
             }
         }
+        //  SAVE SLOT 08
         else if (characterSlot == CharacterSlot.CharacterSlot_08)
         {
             saveFileWriter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
 
+            //  IF THE FILE EXISTS, GET INFORMATION FROM IT
             if (saveFileWriter.CheckToSeeIfFileExists())
             {
-                characterName.text = WorldSaveGameManager.instance.characterSlot08.chartacterName;
+                characterName.text = WorldSaveGameManager.instance.characterSlot08.characterName;
             }
+            //  IF IT DOES NOT, DISABLE THIS GAMEOBJECT
             else
             {
                 gameObject.SetActive(false);
             }
         }
+        //  SAVE SLOT 09
         else if (characterSlot == CharacterSlot.CharacterSlot_09)
         {
             saveFileWriter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
 
+            //  IF THE FILE EXISTS, GET INFORMATION FROM IT
             if (saveFileWriter.CheckToSeeIfFileExists())
             {
-                characterName.text = WorldSaveGameManager.instance.characterSlot09.chartacterName;
+                characterName.text = WorldSaveGameManager.instance.characterSlot09.characterName;
             }
+            //  IF IT DOES NOT, DISABLE THIS GAMEOBJECT
             else
             {
                 gameObject.SetActive(false);
             }
         }
+        //  SAVE SLOT 10
         else if (characterSlot == CharacterSlot.CharacterSlot_10)
         {
             saveFileWriter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
 
+            //  IF THE FILE EXISTS, GET INFORMATION FROM IT
             if (saveFileWriter.CheckToSeeIfFileExists())
             {
-                characterName.text = WorldSaveGameManager.instance.characterSlot10.chartacterName;
+                characterName.text = WorldSaveGameManager.instance.characterSlot10.characterName;
             }
+            //  IF IT DOES NOT, DISABLE THIS GAMEOBJECT
             else
             {
                 gameObject.SetActive(false);
             }
         }
-
     }
 
     public void LoadGameFromCharacterSlot()
@@ -167,5 +196,4 @@ public class UI_Character_Save_Slot : MonoBehaviour
     {
         TitleScreenManager.Instance.SelectCharacterSlot(characterSlot);
     }
-
 }

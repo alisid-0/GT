@@ -1,8 +1,9 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class TitlleScreenLoadMenuInputManager : MonoBehaviour
+public class TitleScreenLoadMenuInputManager : MonoBehaviour
 {
-
     PlayerControls playerControls;
 
     [Header("Title Screen Inputs")]
@@ -32,5 +33,4 @@ public class TitlleScreenLoadMenuInputManager : MonoBehaviour
     {
         playerControls.Disable();
     }
-
 }

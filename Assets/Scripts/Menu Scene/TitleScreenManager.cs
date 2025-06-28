@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.UI;
@@ -5,6 +7,8 @@ using UnityEngine.UI;
 public class TitleScreenManager : MonoBehaviour
 {
     public static TitleScreenManager Instance;
+
+    [Header("Menus")]
     [SerializeField] GameObject titleScreenMainMenu;
     [SerializeField] GameObject titleScreenLoadMenu;
 
@@ -12,7 +16,7 @@ public class TitleScreenManager : MonoBehaviour
     [SerializeField] Button loadMenuReturnButton;
     [SerializeField] Button mainMenuLoadGameButton;
     [SerializeField] Button mainMenuNewGameButton;
-    [SerializeField] Button deleteCharacterPopUpConfirm;
+    [SerializeField] Button deleteCharacterPopUpConfirmButton;
 
     [Header("Pop Ups")]
     [SerializeField] GameObject noCharacterSlotsPopUp;
@@ -21,9 +25,6 @@ public class TitleScreenManager : MonoBehaviour
 
     [Header("Character Slots")]
     public CharacterSlot currentSelectedSlot = CharacterSlot.NO_SLOT;
-
-
-
 
     private void Awake()
     {
@@ -44,24 +45,30 @@ public class TitleScreenManager : MonoBehaviour
 
     public void StartNewGame()
     {
-        WorldSaveGameManager.instance.AttempToCreateNewGame();
+        WorldSaveGameManager.instance.AttemptToCreateNewGame();
     }
 
     public void OpenLoadGameMenu()
     {
-        Debug.Log("Opened Load Game Menu");
+        //  CLOSE MAIN MENU
         titleScreenMainMenu.SetActive(false);
+
+        //  OPEN LOAD MENU
         titleScreenLoadMenu.SetActive(true);
 
+        //  SELECT THE RETURN BUTTON FIRST
         loadMenuReturnButton.Select();
     }
 
     public void CloseLoadGameMenu()
     {
-        Debug.Log("Closed Load Game Menu");
+        //  CLOSE LOAD MENU
         titleScreenLoadMenu.SetActive(false);
+
+        //  OPEN MAIN MENU
         titleScreenMainMenu.SetActive(true);
 
+        //  SELECT THE LOAD BUTTON
         mainMenuLoadGameButton.Select();
     }
 
@@ -73,12 +80,11 @@ public class TitleScreenManager : MonoBehaviour
 
     public void CloseNoFreeCharacterSlotsPopUp()
     {
-        Debug.Log("Clicked");
         noCharacterSlotsPopUp.SetActive(false);
-        mainMenuLoadGameButton.Select();
+        mainMenuNewGameButton.Select();
     }
 
-    // CHARACTER SLOTS
+    //  CHARACTER SLOTS
 
     public void SelectCharacterSlot(CharacterSlot characterSlot)
     {
@@ -95,7 +101,7 @@ public class TitleScreenManager : MonoBehaviour
         if (currentSelectedSlot != CharacterSlot.NO_SLOT)
         {
             deleteCharacterSlotPopUp.SetActive(true);
-            deleteCharacterPopUpConfirm.Select();
+            deleteCharacterPopUpConfirmButton.Select();
         }
     }
 
@@ -104,9 +110,10 @@ public class TitleScreenManager : MonoBehaviour
         deleteCharacterSlotPopUp.SetActive(false);
         WorldSaveGameManager.instance.DeleteGame(currentSelectedSlot);
 
+        //  WE DISABLE AND THEN ENABLE THE LOAD MENU, TO REFRESH THE SLOTS (The deleted slots will now become inactive)
         titleScreenLoadMenu.SetActive(false);
         titleScreenLoadMenu.SetActive(true);
-        
+
         loadMenuReturnButton.Select();
     }
 

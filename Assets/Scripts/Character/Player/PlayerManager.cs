@@ -1,8 +1,11 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class PlayerManager : CharacterManager
 {
-
     [HideInInspector] public PlayerAnimatorManager playerAnimatorManager;
     [HideInInspector] public PlayerLocomotionManager playerLocomotionManager;
     [HideInInspector] public PlayerNetworkManager playerNetworkManager;
@@ -12,7 +15,7 @@ public class PlayerManager : CharacterManager
     {
         base.Awake();
 
-        // DO MORE STUFF, ONLY FOR THE PLAYER
+        //  DO MORE STUFF, ONLY FOR THE PLAYER
 
         playerLocomotionManager = GetComponent<PlayerLocomotionManager>();
         playerAnimatorManager = GetComponent<PlayerAnimatorManager>();
@@ -24,16 +27,14 @@ public class PlayerManager : CharacterManager
     {
         base.Update();
 
-
-        // if we do not own, we do not update
+        //  IF WE DO NOT OWN THIS GAMEOBJECT, WE DO NOT CONTROL OR EDIT IT
         if (!IsOwner)
-        {
             return;
-        }
-        // HANDLE ALL CHARACTERS MOVEMENT
+
+        //  HANDLE MOVEMENT
         playerLocomotionManager.HandleAllMovement();
 
-        // REGEN STAMINA
+        //  REGEN STAMINA
         playerStatsManager.RegenerateStamina();
     }
 
@@ -45,44 +46,60 @@ public class PlayerManager : CharacterManager
         base.LateUpdate();
 
         PlayerCamera.instance.HandleAllCameraActions();
-
     }
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
 
-        // IF THIS IS THE PLAYER OBJECT OWNED BY THIS CLIENT
+        //  IF THIS IS THE PLAYER OBJECT OWNED BY THIS CLIENT
         if (IsOwner)
         {
             PlayerCamera.instance.player = this;
             PlayerInputManager.instance.player = this;
             WorldSaveGameManager.instance.player = this;
 
+            // UPDATE THE TOTAL AMOUNT OF HEALTH OR STAMINA WHEN THE STAT LINKED TO EITHER CHANGES
+            playerNetworkManager.vitality.OnValueChanged += playerNetworkManager.SetNewMaxHealthValue; 
+            playerNetworkManager.endurance.OnValueChanged += playerNetworkManager.SetNewMaxStaminaValue; 
+
+            playerNetworkManager.currentHealth.OnValueChanged += PlayerUIManager.instance.playerUIHudManager.SetNewHealthValue ;
             playerNetworkManager.currentStamina.OnValueChanged += PlayerUIManager.instance.playerUIHudManager.SetNewStaminaValue;
             playerNetworkManager.currentStamina.OnValueChanged += playerStatsManager.ResetStaminaRegenTimer;
 
-            // THIS WILL BE MOVED WHEN SAVING AND LOADING IS ADDED
-
-            playerNetworkManager.maxStamina.Value = playerStatsManager.CalculateStaminaBasedOnEnduranceLevel(playerNetworkManager.endurance.Value);
-            playerNetworkManager.currentStamina.Value = playerStatsManager.CalculateStaminaBasedOnEnduranceLevel(playerNetworkManager.endurance.Value);
-            PlayerUIManager.instance.playerUIHudManager.SetMaxStaminaValue(playerNetworkManager.maxStamina.Value);
         }
     }
 
     public void SaveGameDataToCurrentCharacterData(ref CharacterSaveData currentCharacterData)
     {
-        currentCharacterData.chartacterName = playerNetworkManager.characterName.Value.ToString();
+        currentCharacterData.sceneIndex = SceneManager.GetActiveScene().buildIndex;
+
+        currentCharacterData.characterName = playerNetworkManager.characterName.Value.ToString();
         currentCharacterData.xPosition = transform.position.x;
         currentCharacterData.yPosition = transform.position.y;
         currentCharacterData.zPosition = transform.position.z;
 
+        currentCharacterData.currentHealth = playerNetworkManager.currentHealth.Value;
+        currentCharacterData.currentStamina = playerNetworkManager.currentStamina.Value;
+
+        currentCharacterData.vitality = playerNetworkManager.vitality.Value;
+        currentCharacterData.endurance = playerNetworkManager.endurance.Value;
     }
 
     public void LoadGameDataFromCurrentCharacterData(ref CharacterSaveData currentCharacterData)
     {
-        playerNetworkManager.characterName.Value = currentCharacterData.chartacterName;
+        playerNetworkManager.characterName.Value = currentCharacterData.characterName;
         Vector3 myPosition = new Vector3(currentCharacterData.xPosition, currentCharacterData.yPosition, currentCharacterData.zPosition);
         transform.position = myPosition;
+
+        playerNetworkManager.vitality.Value = currentCharacterData.vitality;
+        playerNetworkManager.endurance.Value = currentCharacterData.endurance;
+
+
+        playerNetworkManager.maxHealth.Value = playerStatsManager.CalculateHealthBasedOnVitalityLevel(currentCharacterData.vitality);
+        playerNetworkManager.maxStamina.Value = playerStatsManager.CalculateStaminaBasedOnEnduranceLevel(currentCharacterData.endurance);
+        playerNetworkManager.currentStamina.Value = currentCharacterData.currentStamina;
+        playerNetworkManager.currentHealth.Value = currentCharacterData.currentHealth;
+        PlayerUIManager.instance.playerUIHudManager.SetMaxStaminaValue(playerNetworkManager.maxStamina.Value);
     }
 }
