@@ -1,7 +1,8 @@
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 using Unity.Netcode;
+
 
 public class PlayerUIManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] bool startGameAsClient;
 
     [HideInInspector] public PlayerUIHudManager playerUIHudManager;
+    [HideInInspector] public PlayerUIPopUpManager playerUIPopUpManager;
 
     private void Awake()
     {
@@ -24,21 +26,24 @@ public class PlayerUIManager : MonoBehaviour
         }
 
         playerUIHudManager = GetComponentInChildren<PlayerUIHudManager>();
-    }
-    private void Update()
-    {
-        if (startGameAsClient)
-        {
-            startGameAsClient = false;
-            // Must first shutdown network as host to start as client
-            NetworkManager.Singleton.Shutdown();
-            // we then start the network as client
-            NetworkManager.Singleton.StartClient();
-        }
+        playerUIPopUpManager = GetComponentInChildren<PlayerUIPopUpManager>();
     }
 
     private void Start()
     {
         DontDestroyOnLoad(gameObject);
     }
+
+    private void Update()
+    {
+        if (startGameAsClient)
+        {
+            startGameAsClient = false;
+            //  WE MUST FIRST SHUT DOWN, BECAUSE WE HAVE STARTED AS A HOST DURING THE TITLE SCREEN
+            NetworkManager.Singleton.Shutdown();
+            //  WE THEN RESTART, AS A CLIENT
+            NetworkManager.Singleton.StartClient();
+        }
+    }
 }
+

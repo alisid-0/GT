@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 [System.Serializable]
 //  SINCE WE WANT TO REFERENCE THIS DATA FOR EVERY SAVE FILE, THIS SCRIPT IS NOT A MONOBEHAVIOUR AND IS INSTEAD SERIALIZABLE
 public class CharacterSaveData
@@ -23,10 +24,11 @@ public class CharacterSaveData
     public float zPosition;
 
     [Header("Resources")]
-    public float currentHealth;
+    public int currentHealth;
     public float currentStamina;
 
     [Header("Stats")]
     public int vitality;
     public int endurance;
 }
+
