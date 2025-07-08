@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 381df1761bd1eb549af0e995fd4227ea, type: 3}
-  m_Name: Straight Sword
+  m_Name: Unarmed
   m_EditorClassIdentifier: 
-  itemName: Straight Sword
+  itemName: Unarmed
   itemIcon: {fileID: 0}
-  itemDescription: Just a straight sword.
-  itemID: 1
-  weaponModel: {fileID: 9165405766395622325, guid: c40963bb31d047d4692a48b25de3a26b, type: 3}
-  strengthREQ: 10
-  dexREQ: 10
+  itemDescription: Your bare hands.
+  itemID: 0
+  weaponModel: {fileID: 6621416773351474411, guid: 6824f6e3ebd6b2b4ba8cb507d6cc7789, type: 3}
+  strengthREQ: 1
+  dexREQ: 0
   intREQ: 0
   faithREQ: 0
-  physicalDamage: 118
+  physicalDamage: 8
   magicDamage: 0
   fireDamage: 0
   holyDamage: 0
   lightningDamage: 0
-  poiseDamage: 25
-  baseStaminaCost: 20
+  poiseDamage: 10
+  baseStaminaCost: 5

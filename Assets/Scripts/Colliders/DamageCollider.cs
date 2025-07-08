@@ -1,11 +1,15 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class DamageCollider : MonoBehaviour
 {
+    [Header("Collider")]
+    protected Collider damageCollider;
 
     [Header("Damage")]
-    public float physicalDamage = 0;
+    public float physicalDamage = 0;            // (TO DO, SPLIT INTO "Standard", "Strike", "Slash" and "Pierce")
     public float magicDamage = 0;
     public float fireDamage = 0;
     public float lightningDamage = 0;
@@ -17,19 +21,19 @@ public class DamageCollider : MonoBehaviour
     [Header("Characters Damaged")]
     protected List<CharacterManager> charactersDamaged = new List<CharacterManager>();
 
-    public void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        CharacterManager damageTarget = other.GetComponent<CharacterManager>();
+        CharacterManager damageTarget = other.GetComponentInParent<CharacterManager>();
 
         if (damageTarget != null)
         {
             contactPoint = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
 
-            // CHECK IF WE CAN DAMAGE THIS TARGET BASED ON FRIENDLY FIRE
+            //  CHECK IF WE CAN DAMAGE THIS TARGET BASED ON FRIENDLY FIRE
 
-            // CHECK IF TARGET IS BLOCKING
+            //  CHECK IF TARGET IS BLOCKING
 
-            // CHECK IF TARGET IS INVULNERABLE
+            //  CHECK IF TARGET IS INVULNERABLE
 
             DamageTarget(damageTarget);
         }
@@ -37,9 +41,8 @@ public class DamageCollider : MonoBehaviour
 
     protected virtual void DamageTarget(CharacterManager damageTarget)
     {
-        // WE DONT WANT TO DAMAGE THE SAME TARGET MORE THAN ONCE IN A SINGLE ATTACK
-        // SO WE ADD THEM TO A LIST THAT CHECKS BEFORE APPLYING DAMAGE
-
+        //  WE DON'T WANT TO DAMAGE THE SAME TARGET MORE THAN ONCE IN A SINGLE ATTACK
+        //  SO WE ADD THEM TO A LIST THAT CHECKS BEFORE APPLYING DAMAGE
         if (charactersDamaged.Contains(damageTarget))
             return;
 
@@ -54,4 +57,16 @@ public class DamageCollider : MonoBehaviour
 
         damageTarget.characterEffectsManager.ProcessInstantEffect(damageEffect);
     }
+
+    public virtual void EnableDamageCollider()
+    {
+        damageCollider.enabled = true;
+    }
+
+    public virtual void DisableDamageCollider()
+    {
+        damageCollider.enabled = false;
+        charactersDamaged.Clear();      //  WE RESET THE CHARACTERS THAT HAVE BEEN HIT WHEN WE RESET THE COLLIDER, SO THEY MAY BE HIT AGAIN
+    }
 }
+

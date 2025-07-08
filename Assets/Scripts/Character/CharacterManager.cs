@@ -18,7 +18,6 @@ public class CharacterManager : NetworkBehaviour
 
     [Header("Flags")]
     public bool isPerformingAction = false;
-    public bool isJumping = false;
     public bool isGrounded = true;
     public bool applyRootMotion = false;
     public bool canRotate = true;
@@ -36,6 +35,11 @@ public class CharacterManager : NetworkBehaviour
         characterAnimatorManager = GetComponent<CharacterAnimatorManager>();
     }
 
+    protected virtual void Start()
+    {
+        IgnoreMyOwnColliders();
+    }
+
     protected virtual void Update()
     {
         animator.SetBool("isGrounded", isGrounded);
@@ -51,14 +55,14 @@ public class CharacterManager : NetworkBehaviour
         {
             //  Position
             transform.position = Vector3.SmoothDamp
-                (transform.position, 
-                characterNetworkManager.networkPosition.Value, 
-                ref characterNetworkManager.networkPositionVelocity, 
+                (transform.position,
+                characterNetworkManager.networkPosition.Value,
+                ref characterNetworkManager.networkPositionVelocity,
                 characterNetworkManager.networkPositionSmoothTime);
             //  Rotation
             transform.rotation = Quaternion.Slerp
-                (transform.rotation, 
-                characterNetworkManager.networkRotation.Value, 
+                (transform.rotation,
+                characterNetworkManager.networkRotation.Value,
                 characterNetworkManager.networkRotationSmoothTime);
         }
     }
@@ -98,6 +102,32 @@ public class CharacterManager : NetworkBehaviour
     public virtual void ReviveCharacter()
     {
 
+    }
+
+    protected virtual void IgnoreMyOwnColliders()
+    {
+        Collider characterControllerCollider = GetComponent<Collider>();
+        Collider[] damageableCharacterColliders = GetComponentsInChildren<Collider>();
+
+        List<Collider> ignoreColliders = new List<Collider>();
+
+        // ADDS ALL OF OUR DAMAGEABLE CHARCTER COLLIDERS TO THE LIST THAT WILL BE USED TO IGNORE COLLISIONS
+        foreach (var collider in damageableCharacterColliders)
+        {
+            ignoreColliders.Add(collider);
+        }
+        // ADDS OUR CHARCTER CONTROLELR COLLIDER TO THE LIST THAT WILL BE USED TO IGNORE COLLISIONS
+        ignoreColliders.Add(characterControllerCollider);
+
+        // GOES THROUGH EVERY COLLIDER ON THE LIST AND IGNORES COLLISION WITH EACH OTHER
+        foreach (var collider in ignoreColliders)
+        {
+            foreach (var otherCollider in ignoreColliders)
+            {
+                Physics.IgnoreCollision(collider, otherCollider, true);
+            }
+        }
+        
     }
 }
 

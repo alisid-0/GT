@@ -8,12 +8,15 @@ public class PlayerManager : CharacterManager
 {
     [Header("DEBUG MENU")]
     [SerializeField] bool respawnCharacter = false;
+    [SerializeField] bool switchRightWeapon = false;
+    [SerializeField] bool switchLeftWeapon = false;
 
     [HideInInspector] public PlayerAnimatorManager playerAnimatorManager;
     [HideInInspector] public PlayerLocomotionManager playerLocomotionManager;
     [HideInInspector] public PlayerNetworkManager playerNetworkManager;
     [HideInInspector] public PlayerStatsManager playerStatsManager;
     [HideInInspector] public PlayerInventoryManager playerInventoryManager;
+    [HideInInspector] public PlayerEquipmentManager playerEquipmentManager;
 
     protected override void Awake()
     {
@@ -26,6 +29,7 @@ public class PlayerManager : CharacterManager
         playerNetworkManager = GetComponent<PlayerNetworkManager>();
         playerStatsManager = GetComponent<PlayerStatsManager>();
         playerInventoryManager = GetComponent<PlayerInventoryManager>();
+        playerEquipmentManager = GetComponent<PlayerEquipmentManager>();
     }
 
     protected override void Update()
@@ -76,7 +80,20 @@ public class PlayerManager : CharacterManager
             playerNetworkManager.currentStamina.OnValueChanged += playerStatsManager.ResetStaminaRegenTimer;
         }
 
+        //  STATS
         playerNetworkManager.currentHealth.OnValueChanged += playerNetworkManager.CheckHP;
+
+        //  EQUIPMENT
+        playerNetworkManager.currentRightHandWeaponID.OnValueChanged += playerNetworkManager.OnCurrentRightHandWeaponIDChange;
+        playerNetworkManager.currentLeftHandWeaponID.OnValueChanged += playerNetworkManager.OnCurrentLeftHandWeaponIDChange;
+
+
+        // UPON CONNECTING IF WE ARE THE OWNER OF THIS CHARCTER BUTWE ARE NOT THE SERVER, RELOAD OUR CHARACTER DATA TO THIS NEWLY INSTANTIATED CHARACTER
+        // WE DONT RUN THIS IF WE ARE THE SERVER BECAUSE SINCE THEY ARE THE HOST THEY ARE ALREADY LOADED IN AND DON'T NEED TO RELOAD THEIR DATA
+        if (IsOwner && !IsServer)
+        {
+            LoadGameDataFromCurrentCharacterData(ref WorldSaveGameManager.instance.currentCharacterData);
+        }
     }
 
     public override IEnumerator ProcessDeathEvent(bool manuallySelectDeathAnimation = false)
@@ -97,12 +114,13 @@ public class PlayerManager : CharacterManager
 
         if (IsOwner)
         {
+            Debug.Log("Respawning");
             playerNetworkManager.currentHealth.Value = playerNetworkManager.maxHealth.Value;
             playerNetworkManager.currentStamina.Value = playerNetworkManager.maxStamina.Value;
             //  RESTORE FOCUS POINTS
 
             //  PLAY REBIRTH EFFECTS
-            playerAnimatorManager.PlayTargetActionAnimation("Empty", false);
+            playerAnimatorManager.PlayTargetActionAnimation("Empty_State", false);
         }
     }
 
@@ -147,6 +165,19 @@ public class PlayerManager : CharacterManager
             respawnCharacter = false;
             ReviveCharacter();
         }
+
+        if (switchRightWeapon)
+        {
+            switchRightWeapon = false;
+            playerEquipmentManager.SwitchRightWeapon();
+        }
+
+        if (switchLeftWeapon)
+        {
+            switchLeftWeapon = false;
+            playerEquipmentManager.SwitchLeftWeapon();
+        }
+        
     }
 }
 

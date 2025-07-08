@@ -1,23 +1,26 @@
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.AI;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+
 
 public class PlayerInputManager : MonoBehaviour
 {
-    public static PlayerInputManager instance;
-    public PlayerManager player;
-    PlayerControls playerControls;
+    //  INPUT CONTROLS
+    private PlayerControls playerControls;
 
+    //  SINGLETON
+    public static PlayerInputManager instance;
+
+    //  LOCAL PLAYER
+    public PlayerManager player;
 
     [Header("CAMERA MOVEMENT INPUT")]
     [SerializeField] Vector2 cameraInput;
     public float cameraVerticalInput;
     public float cameraHorizontalInput;
 
-
-    [Header("MOVEMENT INPUT")]
+    [Header("PLAYER MOVEMENT INPUT")]
     [SerializeField] Vector2 movementInput;
     public float verticalInput;
     public float horizontalInput;
@@ -38,27 +41,45 @@ public class PlayerInputManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
     }
 
     private void Start()
     {
         DontDestroyOnLoad(gameObject);
 
+        //  WHEN THE SCENE CHANGES, RUN THIS LOGIC
         SceneManager.activeSceneChanged += OnSceneChange;
 
         instance.enabled = false;
+        if (playerControls != null)
+        {
+            playerControls.Disable();
+        }
     }
 
     private void OnSceneChange(Scene oldScene, Scene newScene)
     {
+        //  IF WE ARE LOADING INTO OUR WORLD SCENE, ENABLE OUR PLAYERS CONTROLS
         if (newScene.buildIndex == WorldSaveGameManager.instance.GetWorldSceneIndex())
         {
             instance.enabled = true;
+
+            if (playerControls != null)
+            {
+                playerControls.Enable();
+            }
+
         }
+        //  OTHERWISE WE MUST BE AT THE MAIN MENU, DISABLE OUR PLAYERS CONTROLS
+        //  THIS IS SO OUR PLAYER CANT MOVE AROUND IF WE ENTER THINGS LIKE A CHARACTER CREATION MENU ECT
         else
         {
             instance.enabled = false;
+
+            if (playerControls != null)
+            {
+                playerControls.Disable();
+            }
         }
     }
 
@@ -70,14 +91,13 @@ public class PlayerInputManager : MonoBehaviour
 
             playerControls.PlayerMovement.Movement.performed += i => movementInput = i.ReadValue<Vector2>();
             playerControls.PlayerCamera.Movement.performed += i => cameraInput = i.ReadValue<Vector2>();
-            playerControls.PlayerCamera.Mouse.performed += i => cameraInput = i.ReadValue<Vector2>();
-            playerControls.PlayerActions.Dodge.performed += instance => dodgeInput = true;
-            playerControls.PlayerActions.Jump.performed += instance => jumpInput = true;
+            playerControls.PlayerActions.Dodge.performed += i => dodgeInput = true;
+            playerControls.PlayerActions.Jump.performed += i => jumpInput = true;
 
-            // HOLDING INPUT SETS BOOL TO TRUE
-            playerControls.PlayerActions.Sprint.performed += instance => sprintInput = true;
-            playerControls.PlayerActions.Sprint.canceled += instance => sprintInput = false;
-
+            //  HOLDING THE INPUT, SETS THE BOOL TO TRUE
+            playerControls.PlayerActions.Sprint.performed += i => sprintInput = true;
+            //  RELEASING THE INPUT, SETS THE BOOL TO FALSE
+            playerControls.PlayerActions.Sprint.canceled += i => sprintInput = false;
         }
 
         playerControls.Enable();
@@ -85,9 +105,11 @@ public class PlayerInputManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        //  IF WE DESTROY THIS OBJECT, UNSUBSCRIBE FROM THIS EVENT
         SceneManager.activeSceneChanged -= OnSceneChange;
     }
 
+    //  IF WE MINIMIZE OR LOWER THE WINDOW, STOP ADJUSTING INPUTS
     private void OnApplicationFocus(bool focus)
     {
         if (enabled)
@@ -110,25 +132,24 @@ public class PlayerInputManager : MonoBehaviour
 
     private void HandleAllInputs()
     {
-        HandleCameraMovementInput();
         HandlePlayerMovementInput();
+        HandleCameraMovementInput();
         HandleDodgeInput();
         HandleSprintInput();
         HandleJumpInput();
     }
 
-    // MOVEMENT
+    //  MOVEMENT
 
     private void HandlePlayerMovementInput()
     {
         verticalInput = movementInput.y;
         horizontalInput = movementInput.x;
 
-        // RETURNS THE ABSOLUTE VALUE
+        //  RETURNS THE ABSOLUTE NUMBER, (Meaning number without the negative sign, so its always positive)
         moveAmount = Mathf.Clamp01(Mathf.Abs(verticalInput) + Mathf.Abs(horizontalInput));
 
-        // CLAMP THE VALUES (OPTIONAL)
-
+        //  WE CLAMP THE VALUES, SO THEY ARE 0, 0.5 OR 1 (OPTIONAL)
         if (moveAmount <= 0.5 && moveAmount > 0)
         {
             moveAmount = 0.5f;
@@ -138,13 +159,16 @@ public class PlayerInputManager : MonoBehaviour
             moveAmount = 1;
         }
 
-        if (player == null)
-        {
-            return;
-        }
+        // WHY DO WE PASS 0 ON THE HORIZONTAL? BECAUSE WE ONLY WANT NON-STRAFING MOVEMENT
+        // WE USE THE HORIZONTAL WHEN WE ARE STRAFING OR LOCKED ON
 
+        if (player == null)
+            return;
+
+        //  IF WE ARE NOT LOCKED ON, ONLY USE THE MOVE AMOUNT
         player.playerAnimatorManager.UpdateAnimatorMovementParameters(0, moveAmount, player.playerNetworkManager.isSprinting.Value);
 
+        //  IF WE ARE LOCKED ON PASS THE HORIZONTAL MOVEMENT AS WELL
     }
 
     private void HandleCameraMovementInput()
@@ -153,7 +177,7 @@ public class PlayerInputManager : MonoBehaviour
         cameraHorizontalInput = cameraInput.x;
     }
 
-    // ACTIONS
+    //  ACTION
 
     private void HandleDodgeInput()
     {
@@ -161,7 +185,7 @@ public class PlayerInputManager : MonoBehaviour
         {
             dodgeInput = false;
 
-            // FUTURE NOTE: RETURN IF MENY OR UI WINDOW IS OPEN, DO NOTHING
+            //  FUTURE NOTE: RETURN (DO NOTHING) IF MENU OR UI WINDOW IS OPEN
 
             player.playerLocomotionManager.AttemptToPerformDodge();
         }
@@ -185,11 +209,11 @@ public class PlayerInputManager : MonoBehaviour
         {
             jumpInput = false;
 
-            // IF WE HAVE A UI WINDOW OPEN SIMPLY RETURN WITHOUT DOING ANYTHING
+            //  IF WE HAVE A UI WINDOW OPEN, SIMPLY RETURN WITHOUT DOING ANYTHING
 
-            // ATTEMPT TO PERFORM JUMP
-
+            //  ATTEMPT TO PERFORM JUMP
             player.playerLocomotionManager.AttemptToPerformJump();
         }
     }
 }
+
